@@ -132,4 +132,24 @@ class Modele {
         return $ligne;
     }
 }
+}
+/**
+     * Retourne la liste complète des produits avec le nombre total d'achats
+     * @return array
+     */
+    public function getProduitsAvecTotalAchat() {
+        $sql = "
+            SELECT 
+                p.reference,
+                p.designation,
+                COALESCE(SUM(lc.qte), 0) AS totalAchat
+            FROM produit p
+            LEFT JOIN ligne_commande lc ON lc.refProduit = p.reference
+            GROUP BY p.reference, p.designation
+            ORDER BY totalAchat DESC
+        ";
+        return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+}
+
 ?>

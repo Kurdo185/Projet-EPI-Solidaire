@@ -30,6 +30,7 @@
                 <li><a href="index.php?uc=commercant&action=ajouterOffre">Nouvelle offre / don</a></li>
                 <li><a href="index.php?uc=commercant&action=stats">Mes statistiques</a></li>
                 <li><a href="index.php?uc=commercant&action=pdfRecap">Export PDF récap.</a></li>
+                <li><a href="index.php?uc=produitsAchat&action=liste">Produits les plus achetés</a></li>
                 <?php break;
 
             default: ?>
