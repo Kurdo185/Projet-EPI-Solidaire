@@ -82,6 +82,31 @@ class Modele {
             throw new Exception("Unable to fetch buyers list: " . $e->getMessage());
         }
     }
+    public function getLesAcheteurs(){
+        $req = "
+            SELECT  a.id                AS id,
+                    h.nom               AS nom,
+                    h.prenom            AS prenom,
+                    h.telephonePortable AS telephonePortable,
+                    h.mail              AS mail,
+                    h.dateNaiss         AS dateNaiss,
+                    a.justificatif_identite   AS justificatif_identite,
+                    a.justificatif_domicile   AS justificatif_domicile,
+                    a.statut            AS statut
+            FROM   acheteur  a
+            JOIN   habitant  h
+                ON  h.idHabitant = a.idHabitant
+                AND h.idFoyer   = a.idFoyer
+            ORDER  BY h.nom, h.prenom";
+        try {
+            $stmt = self::$monPdo->prepare($req);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error in getLesAcheteurs: " . $e->getMessage());
+            throw new Exception("Unable to fetch buyers list: " . $e->getMessage());
+        }
+    }
 
     public function supprimerAcheteur($idAcheteur){
         $idAcheteur = (int)$idAcheteur;
@@ -182,6 +207,26 @@ public function getProduitsEnDace(){
 
 
 
+
+
+/* Top 3 des produits les plus vendus */
+public function getTop3Produits(){
+    $sql = "SELECT p.reference, p.designation, SUM(lc.qte) AS totalAchat
+            FROM produit p
+            JOIN ligne_commande lc ON lc.refProduit = p.reference
+            GROUP BY p.reference, p.designation
+            ORDER BY totalAchat DESC
+            LIMIT 3";
+    return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+}
+
+public function getProduitsEnDace(){
+    $sql = "SELECT reference, designation, stock
+            FROM produit
+            WHERE stock <= 5
+            ORDER BY stock ASC, designation";
+    return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+}
 
 
     public function getLesReferences() {
