@@ -65,8 +65,8 @@ class Modele {
 					h.telephonePortable AS telephonePortable,
 					h.mail              AS mail,
 					h.dateNaiss         AS dateNaiss,
-					a.justificatif_identite   AS justificatif_identite,
-					a.justificatif_domicile   AS justificatif_domicile,
+					a.Justificatif_identite   AS justificatif_identite,
+					a.Justificatif_domicile   AS justificatif_domicile,
 					a.statut            AS statut
 			FROM   acheteur  a
 			JOIN   habitant  h
@@ -113,7 +113,7 @@ class Modele {
 
     public function ajouterAcheteur($idHabitant, $idFoyer, $tel, $mail, $justifIdentite, $justifDomicile){
         $statut = ($justifIdentite == 1 && $justifDomicile == 1) ? 'valide' : 'en_attente';
-        $req = "INSERT INTO acheteur (idHabitant, idFoyer, justificatif_identite, justificatif_domicile, statut)
+        $req = "INSERT INTO acheteur (idHabitant, idFoyer, Justificatif_identite, Justificatif_domicile, statut)
                 VALUES ($idHabitant, $idFoyer, $justifIdentite, $justifDomicile, " . self::$monPdo->quote($statut) . ")";
         self::$monPdo->exec($req);
     }
