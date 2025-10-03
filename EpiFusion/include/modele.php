@@ -9,7 +9,12 @@ class Modele {
 
     private function __construct(){
         self::$monPdo = new PDO(self::$serveur.';'.self::$bdd, self::$user, self::$mdp);
-        self::$monPdo->query("SET CHARACTER SET utf8");
+        // Make PDO throw exceptions on error so we can see SQL problems instead of getting false returns
+        self::$monPdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        // Default fetch mode to associative arrays
+        self::$monPdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        // Ensure UTF-8
+        self::$monPdo->exec("SET NAMES 'utf8'");
     }
 
     public static function getModele(){
@@ -68,14 +73,12 @@ class Modele {
 				ON  h.idHabitant = a.idHabitant
 				AND h.idFoyer   = a.idFoyer
 			ORDER  BY h.nom, h.prenom";
-		try {
-			$stmt = self::$monPdo->prepare($req);
-			$stmt->execute();
-			return $stmt->fetchAll(PDO::FETCH_ASSOC);
-		} catch (PDOException $e) {
-			error_log("Error in getLesAcheteurs: " . $e->getMessage());
-			throw new Exception("Unable to fetch buyers list: " . $e->getMessage());
-		}
+            $res = self::$monPdo->query($req);
+            if ($res === false) {
+                $err = self::$monPdo->errorInfo();
+                throw new Exception('Erreur SQL getLesAcheteurs: ' . ($err[2] ?? 'unknown'));
+            }
+            return $res->fetchAll(PDO::FETCH_ASSOC);
 	}
 
     public function supprimerAcheteur($idAcheteur){
@@ -138,7 +141,8 @@ class Modele {
         $ligne['dateEmbauche'] = dateAnglaisVersFrancais($ligne['dateEmbauche']);
         return $ligne;
     }
-/**
+
+    /**    
      * Retourne la liste complète des produits avec le nombre total d'achats
      * @return array
      */
@@ -154,6 +158,26 @@ class Modele {
             ORDER BY totalAchat DESC
         ";
         return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getLesReferences() {
+        $sql = "SELECT reference, designation FROM produit ORDER BY designation";
+        return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /* ------  Enregistrer un don OU une vente solidaire ----- */
+    public function enregistrerOffre($idCommerce,$reference,$quantite,$prixOrigine,$prixSolidaire,$isDon){
+        if($isDon || $prixSolidaire===null){            // c’est un don
+            $req = "INSERT INTO donner (idCommerce,refProduit,dateJour,prixOrigine,qte)
+                    VALUES (?,?,NOW(),?,?)";
+            $stmt= Modele::$monPdo->prepare($req);
+            $stmt->execute([$idCommerce,$reference,$prixOrigine,$quantite]);
+        }else{                                // vente solidaire
+            $req = "INSERT INTO vendre (idCommerce,refProduit,dateJour,prixOrigine,prixSolidaire,qte)
+                    VALUES (?,?,NOW(),?,?,?)";
+            $stmt= Modele::$monPdo->prepare($req);
+            $stmt->execute([$idCommerce,$reference,$prixOrigine,$prixSolidaire,$quantite]);
+        }
     }
 }
 
