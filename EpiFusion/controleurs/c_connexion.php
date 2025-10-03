@@ -10,7 +10,7 @@ $action = $_REQUEST['action'];
 switch ($action) {
     case 'demandeConnexion':
         
-session_abort();
+
        $_SESSION = array();
 
 if (ini_get("session.use_cookies")) {
@@ -31,12 +31,17 @@ if (ini_get("session.use_cookies")) {
         $mdpClair = $_POST['mdp'] ?? '';
         $mdpHash = sha1($mdpClair);
 
+
+     
+
         $employe = $pdo->getEmployeByLogin($login);
         if (!$employe || $employe['mdp'] !== $mdpHash) {
             ajouterErreur("Login ou mot de passe incorrect");
             include("vues/v_erreurs.php");
             include("vues/v_connexion.php");
             break;
+
+            session_destroy();
             
         }
 
