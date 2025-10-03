@@ -15,11 +15,16 @@
 <?php
 foreach ($lesAcheteurs as $a):
     // pretty status
-    $statutLbl = match ($a['statut']) {
-        'valide'     => '✔ valide',
-        'en_attente' => '⏳ en attente',
-        default      => htmlspecialchars($a['statut'])
-    };
+    switch ($a['statut']) {
+        case 'valide':
+            $statutLbl = '✔ valide';
+            break;
+        case 'en_attente':
+            $statutLbl = '⏳ en attente';
+            break;
+        default:
+            $statutLbl = htmlspecialchars($a['statut']);
+    }
 ?>
     <tr>
         <td><?= htmlspecialchars($a['nom'])          ?></td>

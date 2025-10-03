@@ -1,9 +1,9 @@
 ﻿<?php
 class Modele {
-    private static $serveur = 'mysql:host=localhost';
+    private static $serveur = 'mysql:host=172.16.203.111';
     private static $bdd = 'dbname=getcet';
-    private static $user = 'root';
-    private static $mdp = '';
+    private static $user = 'sio';
+    private static $mdp = 'slam';
     private static $monPdo;
     private static $monModele = null;
 
@@ -68,7 +68,14 @@ class Modele {
 				ON  h.idHabitant = a.idHabitant
 				AND h.idFoyer   = a.idFoyer
 			ORDER  BY h.nom, h.prenom";
-		return self::$monPdo->query($req)->fetchAll(PDO::FETCH_ASSOC);
+		try {
+			$stmt = self::$monPdo->prepare($req);
+			$stmt->execute();
+			return $stmt->fetchAll(PDO::FETCH_ASSOC);
+		} catch (PDOException $e) {
+			error_log("Error in getLesAcheteurs: " . $e->getMessage());
+			throw new Exception("Unable to fetch buyers list: " . $e->getMessage());
+		}
 	}
 
     public function supprimerAcheteur($idAcheteur){
@@ -131,8 +138,6 @@ class Modele {
         $ligne['dateEmbauche'] = dateAnglaisVersFrancais($ligne['dateEmbauche']);
         return $ligne;
     }
-}
-}
 /**
      * Retourne la liste complète des produits avec le nombre total d'achats
      * @return array
