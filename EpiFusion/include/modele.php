@@ -73,12 +73,14 @@ class Modele {
 				ON  h.idHabitant = a.idHabitant
 				AND h.idFoyer   = a.idFoyer
 			ORDER  BY h.nom, h.prenom";
-            $res = self::$monPdo->query($req);
-            if ($res === false) {
-                $err = self::$monPdo->errorInfo();
-                throw new Exception('Erreur SQL getLesAcheteurs: ' . ($err[2] ?? 'unknown'));
-            }
-            return $res->fetchAll(PDO::FETCH_ASSOC);
+		try {
+			$stmt = self::$monPdo->prepare($req);
+			$stmt->execute();
+			return $stmt->fetchAll(PDO::FETCH_ASSOC);
+		} catch (PDOException $e) {
+			error_log("Error in getLesAcheteurs: " . $e->getMessage());
+			throw new Exception("Unable to fetch buyers list: " . $e->getMessage());
+		}
 	}
 
     public function supprimerAcheteur($idAcheteur){
@@ -141,8 +143,6 @@ class Modele {
         $ligne['dateEmbauche'] = dateAnglaisVersFrancais($ligne['dateEmbauche']);
         return $ligne;
     }
-
-
 /**
      * Retourne la liste complète des produits avec le nombre total d'achats
      * @return array
@@ -160,6 +160,30 @@ class Modele {
         ";
         return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
+
+/* Top 3 des produits les plus vendus */
+public function getTop3Produits(){
+    $sql = "SELECT p.reference, p.designation, SUM(lc.qte) AS totalAchat
+            FROM produit p
+            JOIN ligne_commande lc ON lc.refProduit = p.reference
+            GROUP BY p.reference, p.designation
+            ORDER BY totalAchat DESC
+            LIMIT 3";
+    return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 }
+
+public function getProduitsEnDace(){
+    $sql = "SELECT reference, designation, stock
+            FROM produit
+            WHERE stock <= 5
+            ORDER BY stock ASC, designation";
+    return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+}
+
+}
+
+
+
+
 
 ?>

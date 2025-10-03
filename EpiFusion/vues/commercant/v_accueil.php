@@ -12,5 +12,9 @@
         <td><a href="index.php?uc=commercant&action=stats">Afficher</a></td></tr>
     <tr><td>Télécharger mon récapitulatif PDF</td>
         <td><a href="index.php?uc=commercant&action=pdfRecap">Exporter</a></td></tr>
+        <tr><td>Produits en tendance</td>
+        <td><a href="index.php?uc=commercant&action=Produitendance">Consulter</a></td></tr>
+        <tr><td>Top 3 des produits les plus vendus</td>
+        <td><a href="index.php?uc=commercant&action=top3produits">TOP 3 produit</a></td></tr>
   </table>
 </div>
