@@ -40,6 +40,13 @@ switch($action){
 		break;
 	}
 
+	case 'stockCritique':{
+		$perimes = $pdo->getProduitsPerimes();
+		$critiques = $pdo->getProduitsStockCritique();
+   		include("vues/maire/v_stockCritique.php");
+    	break;
+	}
+
 }
 
 

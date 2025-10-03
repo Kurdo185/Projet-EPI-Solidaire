@@ -160,6 +160,44 @@ class Modele {
         ";
         return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
+
+
+    
+    // Ajouts de la methode des stocks critique et périmer pour le maire
+
+    public function getProduitsPerimes() {
+    $sql = "
+        SELECT c.nom AS commerce,p.reference,p.designation,p.qteStock,a.datePeremption
+        FROM article a
+        JOIN produit p ON p.reference = a.refProduit
+        JOIN commerce c ON c.id = (
+            SELECT v.idCommerce 
+            FROM vendre v 
+            WHERE v.refProduit = a.refProduit 
+            LIMIT 1
+        )
+        WHERE a.datePeremption < CURDATE()
+        ORDER BY c.nom, p.designation";
+        return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+	// Ajouts de la methode des stocks critique et périmer pour le maire
+
+    public function getProduitsStockCritique() {
+    $sql = "
+        SELECT IF(c.nom IS NULL, 'Commerce inconnu', c.nom) AS commerce,p.reference,p.designation,p.qteStock
+        FROM produit p
+        LEFT JOIN vendre v ON v.refProduit = p.reference
+        LEFT JOIN commerce c ON c.id = v.idCommerce
+        WHERE p.qteStock < 5
+        GROUP BY p.reference, p.designation, p.qteStock, c.nom
+        ORDER BY p.designation";
+        return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+
+
 }
 
 ?>
