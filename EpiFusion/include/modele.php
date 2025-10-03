@@ -1,15 +1,20 @@
 ﻿<?php
 class Modele {
-    private static $serveur = 'mysql:host=localhost';
+    private static $serveur = 'mysql:host=172.16.203.112';
     private static $bdd = 'dbname=getcet';
-    private static $user = 'root';
-    private static $mdp = '';
+    private static $user = 'sio';
+    private static $mdp = 'slam';
     private static $monPdo;
     private static $monModele = null;
 
     private function __construct(){
         self::$monPdo = new PDO(self::$serveur.';'.self::$bdd, self::$user, self::$mdp);
-        self::$monPdo->query("SET CHARACTER SET utf8");
+        // Make PDO throw exceptions on error so we can see SQL problems instead of getting false returns
+        self::$monPdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        // Default fetch mode to associative arrays
+        self::$monPdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        // Ensure UTF-8
+        self::$monPdo->exec("SET NAMES 'utf8'");
     }
 
     public static function getModele(){
@@ -68,7 +73,12 @@ class Modele {
 				ON  h.idHabitant = a.idHabitant
 				AND h.idFoyer   = a.idFoyer
 			ORDER  BY h.nom, h.prenom";
-		return self::$monPdo->query($req)->fetchAll(PDO::FETCH_ASSOC);
+            $res = self::$monPdo->query($req);
+            if ($res === false) {
+                $err = self::$monPdo->errorInfo();
+                throw new Exception('Erreur SQL getLesAcheteurs: ' . ($err[2] ?? 'unknown'));
+            }
+            return $res->fetchAll(PDO::FETCH_ASSOC);
 	}
 
     public function supprimerAcheteur($idAcheteur){
@@ -131,8 +141,8 @@ class Modele {
         $ligne['dateEmbauche'] = dateAnglaisVersFrancais($ligne['dateEmbauche']);
         return $ligne;
     }
-}
-}
+
+
 /**
      * Retourne la liste complète des produits avec le nombre total d'achats
      * @return array

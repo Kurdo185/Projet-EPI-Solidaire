@@ -14,21 +14,25 @@
 
 <?php
 foreach ($lesAcheteurs as $a):
-    // pretty status
-    $statutLbl = match ($a['statut']) {
-        'valide'     => '✔ valide',
-        'en_attente' => '⏳ en attente',
-        default      => htmlspecialchars($a['statut'])
-    };
+    /* PHP 7 compatible */
+    switch ($a['statut']) {
+        case 'valide':
+            $statutLbl = '✔ valide';
+            break;
+        case 'en_attente':
+            $statutLbl = '⏳ en attente';
+            break;
+        default:
+            $statutLbl = htmlspecialchars($a['statut']);
+    }
 ?>
     <tr>
-        <td><?= htmlspecialchars($a['nom'])          ?></td>
-        <td><?= htmlspecialchars($a['prenom'])       ?></td>
+        <td><?= htmlspecialchars($a['nom']) ?></td>
+        <td><?= htmlspecialchars($a['prenom']) ?></td>
         <td><?= htmlspecialchars($a['telephonePortable']) ?></td>
-        <td><?= htmlspecialchars($a['mail'])         ?></td>
+        <td><?= htmlspecialchars($a['mail']) ?></td>
         <td><?= dateAnglaisVersFrancais($a['dateNaiss']) ?></td>
 
-        <!-- icônes identiques à l’image -->
         <td class="center"><?= $a['justificatif_identite'] ? '✔️' : '❌' ?></td>
         <td class="center"><?= $a['justificatif_domicile'] ? '✔️' : '❌' ?></td>
 
