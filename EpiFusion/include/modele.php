@@ -57,29 +57,31 @@ class Modele {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-	public function getLesAcheteurs(){
-		$req = "
-			SELECT  a.id                AS id,
-					h.nom               AS nom,
-					h.prenom            AS prenom,
-					h.telephonePortable AS telephonePortable,
-					h.mail              AS mail,
-					h.dateNaiss         AS dateNaiss,
-					a.Justificatif_identite   AS justificatif_identite,
-					a.Justificatif_domicile   AS justificatif_domicile,
-					a.statut            AS statut
-			FROM   acheteur  a
-			JOIN   habitant  h
-				ON  h.idHabitant = a.idHabitant
-				AND h.idFoyer   = a.idFoyer
-			ORDER  BY h.nom, h.prenom";
-            $res = self::$monPdo->query($req);
-            if ($res === false) {
-                $err = self::$monPdo->errorInfo();
-                throw new Exception('Erreur SQL getLesAcheteurs: ' . ($err[2] ?? 'unknown'));
-            }
-            return $res->fetchAll(PDO::FETCH_ASSOC);
-	}
+    public function getLesAcheteurs(){
+        $req = "
+            SELECT  a.id                AS id,
+                    h.nom               AS nom,
+                    h.prenom            AS prenom,
+                    h.telephonePortable AS telephonePortable,
+                    h.mail              AS mail,
+                    h.dateNaiss         AS dateNaiss,
+                    a.justificatif_identite   AS justificatif_identite,
+                    a.justificatif_domicile   AS justificatif_domicile,
+                    a.statut            AS statut
+            FROM   acheteur  a
+            JOIN   habitant  h
+                ON  h.idHabitant = a.idHabitant
+                AND h.idFoyer   = a.idFoyer
+            ORDER  BY h.nom, h.prenom";
+        try {
+            $stmt = self::$monPdo->prepare($req);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error in getLesAcheteurs: " . $e->getMessage());
+            throw new Exception("Unable to fetch buyers list: " . $e->getMessage());
+        }
+    }
 
     public function supprimerAcheteur($idAcheteur){
         $idAcheteur = (int)$idAcheteur;
@@ -113,7 +115,7 @@ class Modele {
 
     public function ajouterAcheteur($idHabitant, $idFoyer, $tel, $mail, $justifIdentite, $justifDomicile){
         $statut = ($justifIdentite == 1 && $justifDomicile == 1) ? 'valide' : 'en_attente';
-        $req = "INSERT INTO acheteur (idHabitant, idFoyer, Justificatif_identite, Justificatif_domicile, statut)
+        $req = "INSERT INTO acheteur (idHabitant, idFoyer, justificatif_identite, justificatif_domicile, statut)
                 VALUES ($idHabitant, $idFoyer, $justifIdentite, $justifDomicile, " . self::$monPdo->quote($statut) . ")";
         self::$monPdo->exec($req);
     }
@@ -141,8 +143,7 @@ class Modele {
         $ligne['dateEmbauche'] = dateAnglaisVersFrancais($ligne['dateEmbauche']);
         return $ligne;
     }
-
-    /**    
+/**
      * Retourne la liste complète des produits avec le nombre total d'achats
      * @return array
      */
@@ -160,14 +161,39 @@ class Modele {
         return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
+/* Top 3 des produits les plus vendus */
+public function getTop3Produits(){
+    $sql = "SELECT p.reference, p.designation, SUM(lc.qte) AS totalAchat
+            FROM produit p
+            JOIN ligne_commande lc ON lc.refProduit = p.reference
+            GROUP BY p.reference, p.designation
+            ORDER BY totalAchat DESC
+            LIMIT 3";
+    return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+}
+
+public function getProduitsEnDace(){
+    $sql = "SELECT reference, designation, stock
+            FROM produit
+            WHERE stock <= 5
+            ORDER BY stock ASC, designation";
+    return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
+
+
+
     public function getLesReferences() {
         $sql = "SELECT reference, designation FROM produit ORDER BY designation";
         return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /* ------  Enregistrer un don OU une vente solidaire ----- */
+
+
+        /* ------  Enregistrer un don OU une vente solidaire ----- */
     public function enregistrerOffre($idCommerce,$reference,$quantite,$prixOrigine,$prixSolidaire,$isDon){
-        if($isDon || $prixSolidaire===null){            // c’est un don
+        if($isDon || $prixSolidaire===null){            // c’est un don qui est fait 
             $req = "INSERT INTO donner (idCommerce,refProduit,dateJour,prixOrigine,qte)
                     VALUES (?,?,NOW(),?,?)";
             $stmt= Modele::$monPdo->prepare($req);
