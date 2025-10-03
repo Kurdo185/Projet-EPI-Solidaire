@@ -9,6 +9,22 @@ switch ($action) {
         include("vues/v_connexion.php");
         break;
 
+    case 'deconnexion':
+        // Détruire toutes les variables de session
+        $_SESSION = array();
+
+        // Détruire le cookie de session si il existe
+        if (isset($_COOKIE[session_name()])) {
+            setcookie(session_name(), '', time()-3600, '/');
+        }
+
+        // Détruire la session
+        session_destroy();
+
+        // Rediriger vers la page de connexion
+        header("Location: index.php?uc=connexion&action=demandeConnexion");
+        exit;
+
     case 'valideConnexion': {
         $login = $_POST['login'] ?? '';
         $mdpClair = $_POST['mdp'] ?? '';

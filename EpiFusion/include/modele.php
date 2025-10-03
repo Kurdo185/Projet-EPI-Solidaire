@@ -144,6 +144,7 @@ class Modele {
         return $ligne;
     }
 /**
+/**
      * Retourne la liste complète des produits avec le nombre total d'achats
      * @return array
      */
@@ -172,6 +173,7 @@ public function getTop3Produits(){
     return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 }
 
+
 public function getProduitsEnDace(){
     $sql = "SELECT reference, designation, stock
             FROM produit
@@ -179,6 +181,9 @@ public function getProduitsEnDace(){
             ORDER BY stock ASC, designation";
     return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 }
+
+
+
 
 
     public function getLesReferences() {
