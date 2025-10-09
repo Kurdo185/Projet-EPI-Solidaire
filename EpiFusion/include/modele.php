@@ -1,9 +1,9 @@
 ﻿<?php
 class Modele {
-    private static $serveur = 'mysql:host=172.16.203.111';
+    private static $serveur = 'mysql:host=localhost';
     private static $bdd = 'dbname=getcet';
-    private static $user = 'sio';
-    private static $mdp = 'slam';
+    private static $user = 'root';
+    private static $mdp = '';
     private static $monPdo;
     private static $monModele = null;
 

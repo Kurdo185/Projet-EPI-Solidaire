@@ -9,26 +9,44 @@ switch ($action) {
         include("vues/v_connexion.php");
         break;
 
+    /* ---------- DÉCONNEXION : VERSION ULTRA-SÛRE ---------- */
     case 'deconnexion':
-        // Détruire toutes les variables de session
-        $_SESSION = array();
-
-        // Détruire le cookie de session si il existe
-        if (isset($_COOKIE[session_name()])) {
-            setcookie(session_name(), '', time()-3600, '/');
+        // 1. Démarrer la session si ce n’est pas déjà fait
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
         }
 
-        // Détruire la session
-        session_destroy();
+        // 2. Vider le tableau $_SESSION
+        $_SESSION = [];
 
-        // Rediriger vers la page de connexion
-        header("Location: index.php?uc=connexion&action=demandeConnexion");
+        // 3. Supprimer le cookie de session (peu importe son nom ou ses paramètres)
+        $cookieParam = session_get_cookie_params();
+        $name        = session_name();
+        if (isset($_COOKIE[$name])) {
+            setcookie(
+                $name,
+                '',
+                time() - 42000,
+                $cookieParam['path'],
+                $cookieParam['domain'],
+                $cookieParam['secure'],
+                $cookieParam['httponly']
+            );
+        }
+
+        // 4. Détruire la session côté serveur
+        session_destroy();
+        session_write_close();   // force l’écriture et la fermeture
+
+        // 5. Rediriger vers la page de connexion
+        header('Location: index.php?uc=connexion&action=demandeConnexion');
         exit;
 
-    case 'valideConnexion': {
-        $login = $_POST['login'] ?? '';
-        $mdpClair = $_POST['mdp'] ?? '';
-        $mdpHash = sha1($mdpClair);
+    /* ---------- CONNEXION ---------- */
+    case 'valideConnexion':
+        $login    = $_POST['login'] ?? '';
+        $mdpClair = $_POST['mdp']   ?? '';
+        $mdpHash  = sha1($mdpClair);
 
         $employe = $pdo->getEmployeByLogin($login);
         if (!$employe || $employe['mdp'] !== $mdpHash) {
@@ -68,7 +86,6 @@ switch ($action) {
                 exit;
         }
         break;
-    }
 
     default:
         include("vues/v_connexion.php");
