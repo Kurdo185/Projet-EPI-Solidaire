@@ -188,6 +188,31 @@ public function getProduitsEnDace(){
             ORDER BY stock ASC, designation";
     return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 }
+
+/**
+ * Retourne les produits les plus achetés (top N)
+ * @param int $limit  nombre de lignes à renvoyer
+ * @return array
+ */
+public function getProduitsTendance(int $limit = 5): array
+{
+    $sql = "
+        SELECT 
+            p.reference,
+            p.designation,
+            COALESCE(SUM(lc.qte), 0) AS totalAchat
+        FROM produit p
+        LEFT JOIN ligne_commande lc ON lc.refProduit = p.reference
+        GROUP BY p.reference, p.designation
+        ORDER BY totalAchat DESC
+        LIMIT :lim
+    ";
+    $stmt = self::$monPdo->prepare($sql);
+    $stmt->bindValue(':lim', $limit, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 }
 
 

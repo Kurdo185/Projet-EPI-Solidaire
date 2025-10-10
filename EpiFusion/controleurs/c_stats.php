@@ -26,4 +26,10 @@ switch ($action) {
     default:
         header('Location: index.php?uc=stats&action=top3');
         exit;
+
+case 'produitsTendance':
+    $topAchat = $pdo->getProduitsTendance(5);   // 5 plus achetés
+    include 'vues/v_produitsTendance.php';
+    break;
+
 }
