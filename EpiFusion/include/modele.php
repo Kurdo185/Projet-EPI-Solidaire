@@ -2,8 +2,8 @@
     class Modele {
         private static $serveur = 'mysql:host=172.16.203.118';
         private static $bdd = 'dbname=getcet';
-        private static $user = 'root';
-        private static $mdp = '';
+        private static $user = 'sio';
+        private static $mdp = 'slam';
         private static $monPdo;
         private static $monModele = null;
 
@@ -143,8 +143,8 @@
         $ligne['dateEmbauche'] = dateAnglaisVersFrancais($ligne['dateEmbauche']);
         return $ligne;
     }
-/**
-/**
+
+    /**
      * Retourne la liste complète des produits avec le nombre total d'achats
      * @return array
      */
@@ -227,6 +227,6 @@
         return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
-
+} // <-- fermeture de la classe Modele
 
 ?>
