@@ -2,8 +2,8 @@
 class Modele {
     private static $serveur = 'mysql:host=172.16.203.112';
     private static $bdd = 'dbname=getcet';
-    private static $user = 'sio';
-    private static $mdp = 'slam';
+    private static $user = 'root';
+    private static $mdp = '';
     private static $monPdo;
     private static $monModele = null;
 
@@ -57,31 +57,31 @@ class Modele {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-	public function getLesAcheteurs(){
-		$req = "
-			SELECT  a.id                AS id,
-					h.nom               AS nom,
-					h.prenom            AS prenom,
-					h.telephonePortable AS telephonePortable,
-					h.mail              AS mail,
-					h.dateNaiss         AS dateNaiss,
-					a.justificatif_identite   AS justificatif_identite,
-					a.justificatif_domicile   AS justificatif_domicile,
-					a.statut            AS statut
-			FROM   acheteur  a
-			JOIN   habitant  h
-				ON  h.idHabitant = a.idHabitant
-				AND h.idFoyer   = a.idFoyer
-			ORDER  BY h.nom, h.prenom";
-		try {
-			$stmt = self::$monPdo->prepare($req);
-			$stmt->execute();
-			return $stmt->fetchAll(PDO::FETCH_ASSOC);
-		} catch (PDOException $e) {
-			error_log("Error in getLesAcheteurs: " . $e->getMessage());
-			throw new Exception("Unable to fetch buyers list: " . $e->getMessage());
-		}
-	}
+    public function getLesAcheteurs(){
+        $req = "
+            SELECT  a.id                AS id,
+                    h.nom               AS nom,
+                    h.prenom            AS prenom,
+                    h.telephonePortable AS telephonePortable,
+                    h.mail              AS mail,
+                    h.dateNaiss         AS dateNaiss,
+                    a.justificatif_identite   AS justificatif_identite,
+                    a.justificatif_domicile   AS justificatif_domicile,
+                    a.statut            AS statut
+            FROM   acheteur  a
+            JOIN   habitant  h
+                ON  h.idHabitant = a.idHabitant
+                AND h.idFoyer   = a.idFoyer
+            ORDER  BY h.nom, h.prenom";
+        try {
+            $stmt = self::$monPdo->prepare($req);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error in getLesAcheteurs: " . $e->getMessage());
+            throw new Exception("Unable to fetch buyers list: " . $e->getMessage());
+        }
+    }
 
     public function supprimerAcheteur($idAcheteur){
         $idAcheteur = (int)$idAcheteur;
@@ -144,6 +144,7 @@ class Modele {
         return $ligne;
     }
 /**
+/**
      * Retourne la liste complète des produits avec le nombre total d'achats
      * @return array
      */
@@ -180,9 +181,14 @@ public function getProduitsEnDace(){
     return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 }
 
-}
 
 
+
+
+    public function getLesReferences() {
+        $sql = "SELECT reference, designation FROM produit ORDER BY designation";
+        return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
 
 
 
