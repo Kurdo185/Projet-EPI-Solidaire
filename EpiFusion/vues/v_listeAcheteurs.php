@@ -14,7 +14,7 @@
 
 <?php
 foreach ($lesAcheteurs as $a):
-    /* PHP 7 compatible */
+    // pretty status
     switch ($a['statut']) {
         case 'valide':
             $statutLbl = '✔ valide';
