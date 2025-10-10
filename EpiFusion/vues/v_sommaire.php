@@ -21,8 +21,9 @@
                 <li><a href="index.php?uc=listeCommerces&action=gererCommerces">Gestion des commerces</a></li>
                 <li><a href="index.php?uc=listeAcheteurs&action=gererAcheteurs">Gestion des acheteurs</a></li>
                 <li><a href="index.php?uc=prix&action=fixer">Fixer prix solidaire</a></li>
-                <li><a href="index.php?uc=stats&action=top3produits">Top 3 produits</a></li>
                 <li><a href="index.php?uc=pdf&action=listeCommerces">Export PDF</a></li>
+                <li><a href="index.php?uc=stats&action=top3produits">Top 3 produits</a></li>
+                <li><a href="index.php?uc=stats&action=ProduitsEnTendance">Produits en tendance</a></li>
                 <?php break;
 
             case 'commercant': ?>

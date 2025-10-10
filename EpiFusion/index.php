@@ -33,7 +33,11 @@ switch($uc){
         $_REQUEST['uc'] = 'connexion';
         include("controleurs/c_connexion.php");
         break;
+case 'stats':
+    include 'controleurs/c_stats.php';
+    break;
 }
 
 include("vues/v_pied.php");
+
 ?>
