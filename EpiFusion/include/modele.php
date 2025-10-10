@@ -162,51 +162,54 @@ class Modele {
         return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
-/* Top 3 des produits les plus vendus */
-public function getTop3Produits(){
-    $sql = "SELECT p.reference, p.designation, SUM(lc.qte) AS totalAchat
-            FROM produit p
-            JOIN ligne_commande lc ON lc.refProduit = p.reference
-            GROUP BY p.reference, p.designation
-            ORDER BY totalAchat DESC
-            LIMIT 3";
-    return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-}
+    /* Top 3 des produits les plus vendus */
+    public function getTop3Produits(){
+        $sql = "SELECT p.reference, p.designation, SUM(lc.qte) AS totalAchat
+                FROM produit p
+                JOIN ligne_commande lc ON lc.refProduit = p.reference
+                GROUP BY p.reference, p.designation
+                ORDER BY totalAchat DESC
+                LIMIT 3";
+        return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
 
 
-public function getProduitsEnDace(){
-    $sql = "SELECT reference, designation, stock
-            FROM produit
-            WHERE stock <= 5
-            ORDER BY stock ASC, designation";
-    return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-}
-
-
-
-
-
-    public function getLesReferences() {
-        $sql = "SELECT reference, designation FROM produit ORDER BY designation";
+    public function getProduitsEnDace(){
+        $sql = "SELECT reference, designation, stock
+                FROM produit
+                WHERE stock <= 5
+                ORDER BY stock ASC, designation";
         return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
 
 
-        /* ------  Enregistrer un don OU une vente solidaire ----- */
+
+    /* Enregistrer un don OU une vente solidaire */
+    public function getLesReferences() {
+        $sql = "SELECT reference, designation 
+                FROM produit 
+                ORDER BY designation";
+        return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /* Enregistrer un don OU une vente solidaire */
     public function enregistrerOffre($idCommerce,$reference,$quantite,$prixOrigine,$prixSolidaire,$isDon){
-        if($isDon || $prixSolidaire===null){            // c’est un don qui est fait 
+        if($isDon || $prixSolidaire===null){ /* c’est un don qui est fait */
             $req = "INSERT INTO donner (idCommerce,refProduit,dateJour,prixOrigine,qte)
                     VALUES (?,?,NOW(),?,?)";
             $stmt= Modele::$monPdo->prepare($req);
             $stmt->execute([$idCommerce,$reference,$prixOrigine,$quantite]);
-        }else{                                // vente solidaire
+        }
+        /* Vente solidaire */
+        else{
             $req = "INSERT INTO vendre (idCommerce,refProduit,dateJour,prixOrigine,prixSolidaire,qte)
                     VALUES (?,?,NOW(),?,?,?)";
             $stmt= Modele::$monPdo->prepare($req);
             $stmt->execute([$idCommerce,$reference,$prixOrigine,$prixSolidaire,$quantite]);
         }
     }
+
 }
 
 ?>
