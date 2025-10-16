@@ -7,7 +7,8 @@
 				<th>Rue</th>  
                 <th>Code Postal</th>  
                 <th>Ville</th> 
-                <th class="action">Supprimer</th>   				
+                <th class="action">Supprimer</th>  
+				<th class="action">Modifier</th> 				
              </tr>
           
     <?php    
@@ -20,12 +21,14 @@
 			$ville = $unCommerce['ville'];
 	?>		
             <tr>
+				<td><a href="index.php?uc=listeCommerces&action=modifierCommercant&id=<?= $id ?>">Modifier</a></td>
 			    <td> <?php echo $id ?></td>
                 <td> <?php echo $nom ?></td>
                 <td><?php echo $rue ?></td>
                 <td><?php echo $cp ?></td>
 				<td><?php echo $ville ?></td>
                 <td><a href="index.php?uc=listeCommerces&action=supprimerCommerce&id=<?php echo $id?>" 
+				
 				onclick="return confirm('Voulez-vous vraiment supprimer ce commerce?');">Supprimer ce commerce</a></td>
              </tr>
 	<?php		 

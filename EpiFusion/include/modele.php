@@ -1,9 +1,9 @@
 ﻿<?php
 class Modele {
-    private static $serveur = 'mysql:host=172.16.203.112';
+    private static $serveur = 'mysql:host=localhost';
     private static $bdd = 'dbname=getcet';
-    private static $user = 'sio';
-    private static $mdp = 'slam';
+    private static $user = '';
+    private static $mdp = '';
     private static $monPdo;
     private static $monModele = null;
 
@@ -212,6 +212,50 @@ public function getProduitsTendance(int $limit = 5): array
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+public function getInfosCommercant($idCommerce) {
+    $sql = "SELECT c.id, c.nom, c.rue, c.codePostal, c.ville, h.telephonePortable, h.mail
+            FROM commerce c
+            JOIN commercant cm ON cm.idCommerce = c.id
+            JOIN habitant h ON h.idHabitant = cm.idHabitant AND h.idFoyer = cm.idFoyer
+            WHERE c.id = :id";
+    $stmt = self::$monPdo->prepare($sql);
+    $stmt->execute(['id' => $idCommerce]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+public function updateCommercant($idCommerce, $nom, $rue, $cp, $ville, $tel, $mail) {
+    // Mise à jour du commerce
+    $sql1 = "UPDATE commerce 
+             SET nom = :nom, rue = :rue, codePostal = :cp, ville = :ville 
+             WHERE id = :id";
+    $stmt1 = self::$monPdo->prepare($sql1);
+    $stmt1->execute([
+        'nom' => $nom,
+        'rue' => $rue,
+        'cp' => $cp,
+        'ville' => $ville,
+        'id' => $idCommerce
+    ]);
+
+    // Mise à jour des coordonnées de l’habitant (via commercant)
+    $sql2 = "UPDATE habitant h
+             JOIN commercant c ON c.idHabitant = h.idHabitant AND c.idFoyer = h.idFoyer
+             SET h.telephonePortable = :tel, h.mail = :mail
+             WHERE c.idCommerce = :id";
+    $stmt2 = self::$monPdo->prepare($sql2);
+    $stmt2->execute([
+        'tel' => $tel,
+        'mail' => $mail,
+        'id' => $idCommerce
+    ]);
+}
+
+
+
+
+
+
 
 }
 

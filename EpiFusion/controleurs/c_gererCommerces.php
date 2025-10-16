@@ -47,6 +47,29 @@ switch($action){
     	break;
 	}
 
+case 'modifierCommercant':
+    $idCommerce = $_REQUEST['id'] ?? 0;
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Traitement du formulaire
+        $nom = $_POST['nom'] ?? '';
+        $rue = $_POST['rue'] ?? '';
+        $cp = $_POST['cp'] ?? '';
+        $ville = $_POST['ville'] ?? '';
+        $tel = $_POST['tel'] ?? '';
+        $mail = $_POST['mail'] ?? '';
+
+        $pdo->updateCommercant($idCommerce, $nom, $rue, $cp, $ville, $tel, $mail);
+        header('Location: index.php?uc=listeCommerces&action=gererCommerces');
+        exit;
+    } else {
+        // Affichage du formulaire
+        $infos = $pdo->getInfosCommercant($idCommerce);
+        include 'vues/v_modifierCommercant.php';
+    }
+    break;
+
+
+
 }
 
 
