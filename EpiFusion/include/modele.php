@@ -253,11 +253,57 @@ public function updateCommercant($idCommerce, $nom, $rue, $cp, $ville, $tel, $ma
 
 
 
+/**
+ * Retourne la liste des offres de vente sans prix solidaire fixé
+ * @return array
+ */
+public function getOffresEnAttentePrix() {
+    $sql = "
+        SELECT 
+            v.idCommerce,
+            v.refProduit,
+            v.dateJour,
+            v.prixOrigine,
+            v.prixSolidaire,
+            v.qte,
+            p.designation,
+            c.nom AS nomCommerce
+        FROM vendre v
+        JOIN produit p ON p.reference = v.refProduit
+        JOIN commerce c ON c.id = v.idCommerce
+        WHERE v.prixSolidaire IS NULL OR v.prixSolidaire = 0
+        ORDER BY v.dateJour DESC
+    ";
+    return self::$monPdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+}
 
-
+/**
+ * Fixe le prix solidaire d'une offre de vente
+ * @param int $idCommerce
+ * @param string $refProduit
+ * @param string $dateJour
+ * @param float $prixSolidaire
+ */
+public function fixerPrixSolidaire($idCommerce, $refProduit, $dateJour, $prixSolidaire) {
+    $sql = "
+        UPDATE vendre 
+        SET prixSolidaire = :prixSolidaire
+        WHERE idCommerce = :idCommerce 
+          AND refProduit = :refProduit 
+          AND dateJour = :dateJour
+    ";
+    $stmt = self::$monPdo->prepare($sql);
+    $stmt->execute([
+        'prixSolidaire' => $prixSolidaire,
+        'idCommerce' => $idCommerce,
+        'refProduit' => $refProduit,
+        'dateJour' => $dateJour
+    ]);
+}
 
 
 }
+
 
 
 ?>

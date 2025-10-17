@@ -40,6 +40,10 @@ case 'stats':
     case 'produitsAchat':
     include("controleurs/c_produitsAchat.php");
     break;
+    
+    case 'prix':
+    include("controleurs/c_prix.php");
+    break;
 }
 
 include("vues/v_pied.php");
