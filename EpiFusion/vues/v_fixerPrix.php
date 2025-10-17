@@ -20,7 +20,7 @@
                 <tr>
                     <td><?= htmlspecialchars($offre['nomCommerce']) ?></td>
                     <td><?= htmlspecialchars($offre['designation']) ?></td>
-                    <td><?= dateAnglaisVersFrancais(substr($offre['dateJour'], 0, 10)) ?></td>
+                    
                     <td><?= number_format($offre['prixOrigine'], 2) ?> €</td>
                     <td><?= (int)$offre['qte'] ?></td>
                     <td>

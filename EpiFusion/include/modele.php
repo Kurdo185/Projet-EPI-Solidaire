@@ -59,7 +59,7 @@ class Modele {
 
 	public function getLesAcheteurs(){
 		$req = "
-			SELECT  a.id                AS id,
+			 SELECT  a.id                AS id,
 					h.nom               AS nom,
 					h.prenom            AS prenom,
 					h.telephonePortable AS telephonePortable,
