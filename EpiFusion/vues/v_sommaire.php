@@ -24,6 +24,7 @@
                 <li><a href="index.php?uc=pdf&action=listeCommerces">Export PDF</a></li>
                 <li><a href="index.php?uc=stats&action=top3produits">Top 3 produits</a></li>
                 <li><a href="index.php?uc=stats&action=produitsTendance">Produits en tendance</a></li>
+                <li><a href="index.php?uc=produitsAchat&action=liste">Produits avec achats</a></li>
                 <?php break;
 
             case 'commercant': ?>

@@ -36,6 +36,10 @@ switch($uc){
 case 'stats':
     include 'controleurs/c_stats.php';
     break;
+
+    case 'produitsAchat':
+    include("controleurs/c_produitsAchat.php");
+    break;
 }
 
 include("vues/v_pied.php");

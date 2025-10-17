@@ -28,8 +28,7 @@ switch ($action) {
         exit;
 
 case 'produitsTendance':
-    $topAchat = $pdo->getProduitsTendance(5);   // 5 plus achetés
-    include 'vues/v_produitsTendance.php';
+    $topAchat = $pdo->getProduitsTendance(3);   // 3 plus achetés
+    include 'vues/Produitendance.php';
     break;
-
 }

@@ -1,19 +1,19 @@
 ﻿<?php
 class Modele {
-    private static $serveur = 'mysql:host=localhost';
+    private static $serveur = 'mysql:host=172.16.203.112';
     private static $bdd = 'dbname=getcet';
-    private static $user = '';
-    private static $mdp = '';
+    private static $user = 'sio';
+    private static $mdp = 'slam';
     private static $monPdo;
     private static $monModele = null;
 
     private function __construct(){
         self::$monPdo = new PDO(self::$serveur.';'.self::$bdd, self::$user, self::$mdp);
-        // Make PDO throw exceptions on error so we can see SQL problems instead of getting false returns
+        
         self::$monPdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        // Default fetch mode to associative arrays
+      
         self::$monPdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-        // Ensure UTF-8
+       
         self::$monPdo->exec("SET NAMES 'utf8'");
     }
 
